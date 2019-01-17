@@ -6,7 +6,8 @@ import {
     ImageBackground,
     FlatList,
     TouchableOpacity,
-    Platform    
+    Platform,
+    AsyncStorage    
 } from 'react-native'  
 import moment from 'moment'
 import 'moment/locale/pt-br'
@@ -19,80 +20,7 @@ import AddTask from './AddTask'
 
 export default class Agenda extends Component {
     state = {
-        tasks: [
-            {
-                id: Math.random(),
-                desc: 'Comprar o curso de React Native',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Concluir Curso',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Comprar o curso de React Native',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Concluir Curso',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Comprar o curso de React Native',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Concluir Curso',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Comprar o curso de React Native',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Concluir Curso',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Comprar o curso de React Native',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Concluir Curso',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Comprar o curso de React Native',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            },
-            {
-                id: Math.random(),
-                desc: 'Concluir Curso',
-                estimatedAt: new Date(),
-                doneAt: new Date()
-            }
-        ],
+        tasks: [],
         visibleTasks: [],
         showDoneTasks: true,
         showAddTask: false,
@@ -125,6 +53,7 @@ export default class Agenda extends Component {
             visibleTasks = this.state.tasks.filter(pending)            
         }
         this.setState({ visibleTasks })
+        AsyncStorage.setItem('tasks', JSON.stringify(this.state.tasks))
     }
 
     toggleFilter = () => {
@@ -133,8 +62,10 @@ export default class Agenda extends Component {
         }, this.filterTasks)
     }
 
-    componentDidMount = () => {
-        this.filterTasks()
+    componentDidMount = async () => {
+        const data = await AsyncStorage.getItem('tasks')
+        const tasks = JSON.parse(data) || []
+        this.setState({ tasks }, this.filterTasks)        
     }
 
     toggleTask = id => {        
